@@ -1,0 +1,1 @@
+curl -X POST http://a440534714464416bbac96780e5aded1-221080361.us-east-1.elb.amazonaws.com:8181/v1/data/rules -d '@input.json' | jq .

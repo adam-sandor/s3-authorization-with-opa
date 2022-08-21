@@ -1,0 +1,15 @@
+eksctl create cluster \
+--name s3-authz \
+--version 1.21 \
+--region us-east-1 \
+--zones=us-east-1a,us-east-1b,us-east-1c \
+--nodegroup-name s3-authz-cluster-nodes \
+--node-type t3.large \
+--nodes 1 \
+--nodes-min 1 \
+--nodes-max 2 \
+--with-oidc \
+--kubeconfig kubeconfig \
+--ssh-access \
+--ssh-public-key adamsandor \
+--managed

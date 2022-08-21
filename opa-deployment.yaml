@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa
+  labels:
+    app.kubernetes.io/component: opa
+    app.kubernetes.io/name: opa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: opa
+      app.kubernetes.io/name: opa
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: opa
+        app.kubernetes.io/name: opa
+    spec:
+      containers:
+        - name: opa
+          image: openpolicyagent/opa:0.42.2-rootless
+          imagePullPolicy: Always
+          args:
+            - "run"
+            - "--server"
+            - "--ignore=.*"
+            - "--config-file=/config/opa-conf.yaml"
+            # - "--authorization=basic" # enable if you want to limit OPA endpoints with authz policies
+            - "--addr=http://0.0.0.0:8181"
+            - "--diagnostic-addr=0.0.0.0:8282"
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - readOnly: true
+              mountPath: /config/opa-conf.yaml
+              subPath: opa-conf.yaml
+              name: opa-config-vol
+          livenessProbe:
+            httpGet:
+              path: /health
+              scheme: HTTP
+              port: 8282
+            initialDelaySeconds: 60      # Tune these periods for your environemnt
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health?bundle=true  # Include bundle activation in readiness
+              scheme: HTTP
+              port: 8282
+            initialDelaySeconds: 30
+            periodSeconds: 5
+      volumes:
+        - name: opa-config-vol
+          secret:
+            secretName: opa-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opa
+spec:
+  selector:
+    app.kubernetes.io/name: opa
+  ports:
+    - protocol: TCP
+      port: 8181
+      targetPort: 8181
+  type: LoadBalancer

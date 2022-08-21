@@ -1,0 +1,10 @@
+{
+  "input": {
+    "userIdentity": {
+      "arn": "arn:aws:iam::728162064813:user/adam-aws-cli-user"
+    },
+    "user_request": {
+      "url": "https://s3-authz-demo-olap-728162064813.s3-object-lambda.us-east-1.amazonaws.com/prefix2/data1.csv"
+    }
+  }
+}

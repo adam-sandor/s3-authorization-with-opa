@@ -1,0 +1,6 @@
+{
+  "arn:aws:iam::728162064813:user_adam-aws-cli-user": {
+    "region": "US",
+    "security_clearance": 3
+  }
+}
