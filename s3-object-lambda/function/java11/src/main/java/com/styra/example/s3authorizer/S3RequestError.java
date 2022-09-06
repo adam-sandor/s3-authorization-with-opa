@@ -1,4 +1,4 @@
-package com.example.s3objectlambda.error;
+package com.styra.example.s3authorizer;
 
 /**
  * This class represents the S3 Error response.

@@ -1,10 +1,7 @@
-package com.example.s3objectlambda.transform;
+package com.styra.example.s3authorizer;
 
-import com.amazonaws.services.lambda.runtime.events.S3ObjectLambdaEvent;
 import com.bisnode.opa.client.query.OpaQueryApi;
 import com.bisnode.opa.client.query.QueryForDocumentRequest;
-import com.example.s3objectlambda.exception.TransformationException;
-import com.example.s3objectlambda.request.GetObjectRequestWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -19,21 +16,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TransformTest {
+public class OPAAuthorizerTest {
 
     @Test
     @DisplayName("Transform logic calls OPA and filters results")
-    public void transformObjectResponseTest() throws TransformationException {
+    public void transformObjectResponseTest() throws Exception {
         //Todo: Rewrite this test based your transformation logic.
 
         byte[] responseInputStream = ("ID,Classification,Data\n" +
                 "1,public,32rp98hp4qihfelrgjnp4938ghperoiksjdgnsfdlkg09\n" +
                 "2,public,r43[209fjo[4ni[gdflkgldfkgjsfldgk]]]\n" +
                 "3,sensitive,fdsagi[8ehgeihgnlfsdkjvlsdfkjhblksfdhgiosurghe4]").getBytes(StandardCharsets.UTF_8);
-        var mockUserRequest = mock(S3ObjectLambdaEvent.UserRequest.class);
-        var objectRequest = new GetObjectRequestWrapper(mockUserRequest);
-
-        GetObjectTransformer getObjectTransformer = new GetObjectTransformer(objectRequest, null, null);
 
         OpaQueryApi queryApiMock = mock(OpaQueryApi.class);
         when(queryApiMock.queryForDocument(any(QueryForDocumentRequest.class), any(Class.class))).thenAnswer((Answer<JsonNode>) invocationOnMock -> {
@@ -49,10 +42,11 @@ public class TransformTest {
                 throw new IllegalStateException(ex);
             }
         });
-        getObjectTransformer.setOpaQueryApi(queryApiMock);
 
-        var transformedResponseObject = getObjectTransformer
-                .transformObjectResponse(responseInputStream);
+        OPAAuthorizer opaAuthorizer = new OPAAuthorizer(queryApiMock);
+
+        var transformedResponseObject = opaAuthorizer
+                .authorizeObjectResponse(responseInputStream, null, null);
         var transformedString = new String(transformedResponseObject, StandardCharsets.UTF_8);
         assertEquals(("ID,Classification,Data\r\n" +
                 "1,public,32rp98hp4qihfelrgjnp4938ghperoiksjdgnsfdlkg09\r\n" +
@@ -61,16 +55,12 @@ public class TransformTest {
 
     @Test
     @DisplayName("OPA replies with deny")
-    public void denyResponse() throws TransformationException {
+    public void denyResponse() throws Exception {
         try {
             byte[] responseInputStream = ("ID,Classification,Data\n" +
                     "1,public,32rp98hp4qihfelrgjnp4938ghperoiksjdgnsfdlkg09\n" +
                     "2,public,r43[209fjo[4ni[gdflkgldfkgjsfldgk]]]\n" +
                     "3,sensitive,fdsagi[8ehgeihgnlfsdkjvlsdfkjhblksfdhgiosurghe4]").getBytes(StandardCharsets.UTF_8);
-            var mockUserRequest = mock(S3ObjectLambdaEvent.UserRequest.class);
-            var objectRequest = new GetObjectRequestWrapper(mockUserRequest);
-
-            GetObjectTransformer getObjectTransformer = new GetObjectTransformer(objectRequest, null, null);
 
             OpaQueryApi queryApiMock = mock(OpaQueryApi.class);
             when(queryApiMock.queryForDocument(any(QueryForDocumentRequest.class), any(Class.class))).thenAnswer((Answer<JsonNode>) invocationOnMock -> {
@@ -89,10 +79,10 @@ public class TransformTest {
                     throw new IllegalStateException(ex);
                 }
             });
-            getObjectTransformer.setOpaQueryApi(queryApiMock);
 
-            getObjectTransformer
-                    .transformObjectResponse(responseInputStream);
+            OPAAuthorizer opaAuthorizer = new OPAAuthorizer(queryApiMock);
+
+            opaAuthorizer.authorizeObjectResponse(responseInputStream, null, null);
         } catch (AuthorizationException ex) {
             assertEquals("[ \"org2 data can only be accessed from outside the US\" ]", ex.getMessage());
         }

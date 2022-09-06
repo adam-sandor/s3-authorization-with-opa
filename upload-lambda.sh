@@ -1,4 +1,6 @@
-mvn -f s3-object-lambda/function/java11/pom.xml package
+set -e
+
+mvn -f s3-object-lambda/function/java11/pom.xml clean package
 echo "Package complete, uploading artifact..."
 aws s3 cp s3-object-lambda/function/java11/target/S3ObjectLambdaDefaultConfigJavaFunction-1.0.jar s3://s3-authz-demo-lambda-deploy/S3ObjectLambdaDefaultConfigJavaFunction-1.0.jar
 echo "Upload complete, updating Lambda"

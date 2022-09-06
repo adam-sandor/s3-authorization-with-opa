@@ -1,4 +1,4 @@
-package com.example.s3objectlambda.error;
+package com.styra.example.s3authorizer;
 
 /**
  * The list of error codes returned from the Lambda function. We use the same error codes that are

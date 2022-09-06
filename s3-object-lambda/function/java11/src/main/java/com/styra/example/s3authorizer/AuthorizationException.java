@@ -1,4 +1,4 @@
-package com.example.s3objectlambda.transform;
+package com.styra.example.s3authorizer;
 
 public class AuthorizationException extends RuntimeException {
 
