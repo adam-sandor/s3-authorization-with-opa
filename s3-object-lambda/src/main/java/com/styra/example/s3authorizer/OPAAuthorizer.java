@@ -56,7 +56,7 @@ public class OPAAuthorizer {
 
         logger.info("Making call to OPA at {}", OPA_URL);
         JsonNode result = opaQueryApi.queryForDocument(new QueryForDocumentRequest(input, "rules"), JsonNode.class);
-        Boolean allowed = result.get("allow").asBoolean();
+        boolean allowed = result.get("allow").asBoolean();
         if (!allowed) {
             throw new AuthorizationException(result.get("deny").toPrettyString());
         }
