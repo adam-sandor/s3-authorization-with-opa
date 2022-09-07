@@ -1,1 +1,0 @@
-aws s3api get-object --bucket 'arn:aws:s3-object-lambda:us-east-1:728162064813:accesspoint/s3-authz-demo-olap' --key "$1" /dev/stdout

@@ -1,3 +1,6 @@
 .idea
 opa-conf.yaml
 kubeconfig*
+target
+.init
+*.iml

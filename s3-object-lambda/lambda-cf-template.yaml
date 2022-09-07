@@ -17,7 +17,7 @@ Mappings:
     python3.9:
       handler: s3objectlambda.handler
     java11:
-      handler: com.example.s3objectlambda.Handler::handleRequest
+      handler: com.styra.example.s3authorizer.Handler::handleRequest
 Parameters:
   S3BucketName:
     Type: String
@@ -86,9 +86,9 @@ Resources:
         # Else construct the Arn using the SupportingAccessPointName input parameter.
         SupportingAccessPoint:
           !If
-            - ShouldCreateNewSupportingAccessPoint
-            - !GetAtt SupportingAccessPoint.Arn
-            - !Sub "arn:${AWS::Partition}:s3:${AWS::Region}:${AWS::AccountId}:accesspoint/${SupportingAccessPointName}"
+          - ShouldCreateNewSupportingAccessPoint
+          - !GetAtt SupportingAccessPoint.Arn
+          - !Sub "arn:${AWS::Partition}:s3:${AWS::Region}:${AWS::AccountId}:accesspoint/${SupportingAccessPointName}"
         AllowedFeatures:
           - GetObject-Range
           - GetObject-PartNumber
