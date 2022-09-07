@@ -44,11 +44,13 @@ public class OPAAuthorizer {
         logger.info("Transforming file: {}", responseFile);
 
         ObjectNode input = new ObjectMapper().createObjectNode();
+        //context and event can be null in tests
         if (context != null) {
             input.putPOJO("client_context", context.getClientContext());
             input.putPOJO("function_name", context.getFunctionName());
         }
         if (event != null) {
+            input.putPOJO("user_request", event.getUserRequest());
             input.putPOJO("userIdentity", event.getUserIdentity());
         }
 
