@@ -18,6 +18,14 @@ deny["prefix2 data can only be accessed from outside the US"] {
   object_path[1] == "prefix2"
 }
 
+deny["Missing prefix"] {
+  count(object_path) == 2
+}
+
+deny["Unknown Object"] {
+  not object_path
+}
+
 data_permissions["public"]
 
 data_permissions["sensitive"] {
