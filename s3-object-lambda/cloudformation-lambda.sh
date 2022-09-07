@@ -4,7 +4,7 @@ VERSION=$1
 echo "Updating Lambda with version $VERSION"
 
 aws cloudformation deploy \
-  --template-file s3-object-lambda/template/s3objectlambda_defaultconfig.yaml \
+  --template-file lambda-cf-template.yaml \
   --stack-name s3-authz-demo \
   --parameter-overrides ObjectLambdaAccessPointName=$OBJECT_AP \
                         SupportingAccessPointName=$SUPPORTING_AP \
