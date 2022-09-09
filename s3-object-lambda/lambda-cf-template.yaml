@@ -71,6 +71,10 @@ Parameters:
     Default: false
     AllowedValues: [ true, false ]
 
+  OPAUrl:
+    Type: String
+    Description: The URL to the OPA instance
+
 Conditions:
   ShouldCreateNewSupportingAccessPoint: !Equals [!Ref CreateNewSupportingAccessPoint, true]
   ShouldEnableMonitoring: !Equals [!Ref EnableCloudWatchMonitoring, true]
@@ -146,6 +150,10 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime:
         Ref: LambdaFunctionRuntime
+      Environment:
+        Variables:
+          id:
+            Ref: OPAUrl
       Tags:
         - Key: "CreatedBy"
           Value: "S3 Object Lambda Default Configuration"
