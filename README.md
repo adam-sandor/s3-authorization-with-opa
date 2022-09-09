@@ -36,15 +36,18 @@ Create a new Custom type System in Styra DAS and configure it to point the repo 
 ```text
 Repository path: bundle
 ```
+Note: In case you don't want to use Styra DAS for managing the policy bundle you can use any other method that works with OPA. For example
+Creating the policy bundle using `opa build` and uploading it to S3. In this case you can skip the next step (but make sure to
+edit the userdata/data.json and add you real AWS user account in there).
+
 5. Load the user data as a Datasource of the System. Create a new System level (or global as you prefer) datasource and point it to the Git repo
-same as you did with the policy. It's the same Git repo with a different Repository Path.
+same as you did with the policy. Make it a JSON type datasource so you can edit the user attributes directly in DAS. Copy
+the contents of `/bundle/userdata/data.json` into the datasource and add your real AWS user. 
 ```text
 Path: leave it empty
 Data source name: userdata
-Repository path: bundle/userdata/data.json
 ```
-Note: In case you don't want to use Styra DAS for managing the policy bundle you can use any other method that works with OPA. For example
-Creating the policy bundle using `opa build` and uploading it to S3.
+
 6. cd into the `user` directory for some testing
 7. Use the `upload.sh` script to upload data1.csv under 3 different prefixes to S3 (one is no prefix, which will 
 not be allowed to be downloaded by the policy).
@@ -55,12 +58,3 @@ to see the results of the policy:
 ./download.sh prefix2/data1.csv
 ./download.sh data1.csv
 ```
-
-## Object Lambda
-
-The Object Lambda will perform the following function:
-1. Receive a request to get an S3 object
-2. Prepare a request to OPA with all information about the S3 object request
-3. Receive the response and process it
-4. If the response contains any deny messages, return an authorization error to the user
-5. If the response 
